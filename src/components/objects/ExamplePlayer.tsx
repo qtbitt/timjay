@@ -39,7 +39,7 @@ export class ExamplePlayer extends GameObject<GameObjectProps, PlayerState> {
       : undefined;
     return (
       <image
-        href="/player.png"
+        href={`${import.meta.env.BASE_URL}player.png`}
         width={128}
         height={128}
         x={-20}
