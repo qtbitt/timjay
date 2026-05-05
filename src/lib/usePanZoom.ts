@@ -54,6 +54,8 @@ export function usePanZoom(initial: Partial<PanZoomState> = {}) {
     const onMouseDown = (e: MouseEvent) => {
       if (e.button !== 0) return;
       if (!(e.target instanceof SVGElement)) return;
+      // don't pan if clicking on a GameObject
+      if ((e.target as Element).closest("[data-id]")) return;
       dragging.current = true;
       document.body.style.cursor = "grabbing";
       document.body.style.userSelect = "none";

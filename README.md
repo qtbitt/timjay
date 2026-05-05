@@ -61,6 +61,8 @@ Override any of these in your `GameObject` subclass:
 | `onDestroy()`           | On unmount                                                        |
 | `onCollide(other)`      | _(todo)_                                                          |
 
+> **Pointer cursor** — if you override `onClick`, `onMouseDown`, or `onMouseDrag`, the object automatically shows a pointer cursor on hover. No extra setup needed.
+
 ### Shared API
 
 ```ts
@@ -90,6 +92,52 @@ class MyObject extends GameObject<MyProps, MyState> {
 }
 ```
 
+### Audio
+
+Play a sound from anywhere in a `GameObject`:
+
+```ts
+// global (heard at full volume regardless of position)
+this.playSound(`${import.meta.env.BASE_URL}boom.wav`);
+this.playSound(`${import.meta.env.BASE_URL}music.mp3`, { volume: 0.5 });
+
+// spatial (fades with distance from the listener)
+this.playSound(`${import.meta.env.BASE_URL}footstep.wav`, { radius: 300 });
+this.playSound(`${import.meta.env.BASE_URL}explosion.wav`, {
+  radius: 600,
+  volume: 0.8,
+});
+```
+
+Or from outside a `GameObject`:
+
+```ts
+import { playSound } from "./lib/audio";
+playSound("/boom.wav");
+playSound("/boom.wav", { position: { x: 100, y: 200 }, radius: 400 });
+```
+
+### AudioListener
+
+Optional component that acts as the listener in the world. Wrap your `Camera` with it to enable spatial audio and master volume control:
+
+```tsx
+<AudioListener x={cam.x} y={cam.y} volume={0.8} muted={false}>
+  <Camera x={cam.x} y={cam.y} zoom={cam.zoom} rotation={cam.rotation}>
+    ...
+  </Camera>
+</AudioListener>
+```
+
+All props are optional. Without `AudioListener`, audio still works — spatial sounds just use the origin as the listener position.
+
+```ts
+// control master volume/mute imperatively
+import { setMasterVolume, setMasterMute } from "./components/AudioListener";
+setMasterVolume(0.5);
+setMasterMute(true);
+```
+
 ### Time scale
 
 ```ts
@@ -103,32 +151,4 @@ setTimeScale(0); // pause
 ## TODO
 
 - **Collision detection** — `onCollide` exists but nothing calls it yet
-- **Audio** — no sound support
 - **Scene management** — no way to switch between scenes
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
