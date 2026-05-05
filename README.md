@@ -1,6 +1,6 @@
 # timjay engine
 
-A lightweight 2D game engine built on React + TypeScript, rendering to SVG.
+funny lightweight 2D game engine built on React + TypeScript with rendering to SVG.
 
 ## Core Concepts
 
