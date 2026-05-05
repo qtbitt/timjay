@@ -41,6 +41,10 @@ export class CirclingBody extends GameObject<
     });
   }
 
+  onClick(): void {
+    this.playSound(`${import.meta.env.BASE_URL}pop.mp3`, { radius: 400 });
+  }
+
   renderObject(): React.ReactNode {
     return <circle r={this.props.radius} fill={this.props.color} />;
   }

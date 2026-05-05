@@ -1,6 +1,7 @@
 import type { GameObjectProps, GameObjectState, Position } from "../lib/types";
 
 import React from "react";
+import { playSound } from "../lib/audio";
 import { timeScale } from "../lib/timeScale";
 
 export abstract class GameObject<
@@ -114,14 +115,30 @@ export abstract class GameObject<
     return this.state.active;
   }
 
+  // plays sound globally, or spatially at this object's position if radius is given
+  playSound(src: string, options?: { volume?: number; radius?: number }): void {
+    const pos = options?.radius != null ? this.getPosition() : undefined;
+    playSound(src, {
+      volume: options?.volume,
+      radius: options?.radius,
+      position: pos,
+    });
+  }
+
   // template
   render(): React.ReactNode {
     if (!this.state.visible) return null;
     const { x, y } = this.getPosition();
+    const proto = GameObject.prototype;
+    const isInteractable =
+      this.onClick !== proto.onClick ||
+      this.onMouseDown !== proto.onMouseDown ||
+      this.onMouseDrag !== proto.onMouseDrag;
     return (
       <g
         transform={`translate(${x}, ${y})`}
         data-id={this.getId()}
+        style={isInteractable ? { cursor: "pointer" } : undefined}
         onClick={(e) => this.onClick(e.nativeEvent)}
         onMouseDown={(e) => {
           this._isDragging = true;
